@@ -10,15 +10,44 @@ In this project, I have realised two algorithms of caching:
 
 ## Build
 
-`cmake CMakeLists.txt
+```
+git clone https://github.com/DmSM-1/cache.git
 
-`make
+mkdir build
+
+cd build
+
+cmake CMakeLists.txt
+
+make
+```
 
 to start the LFU cache:
-`./lfu_cache
+`build/./lfu_cache`
 
 to start the perfect cache:
-`./prf_cache
+`build/./prf_cache`
+
+## Testing
+If you want to create new tests, you can use test_gen.py for do it
+Example:
+```python3 test/test_gen.py test/new_test_dir```
+Where new_test_dir is name of your test directory
+
+There are also several ready-to-use tests in test/tests. 
+The tests are common to Perfect and LFU caches, but contain different answers.
+Here you can see that Perfect Cache has more hits than LFU.
+
+for testing use test.py
+Example:
+```
+python3 test/test.py build/flu_cache test/tests
+
+python3 test/test.py build/prf_cache test/tests -p
+```
+>note: usong flag `-p` for prf_cache  
+
+
 
 
 
