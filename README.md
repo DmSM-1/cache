@@ -13,6 +13,8 @@ In this project, I have realised two algorithms of caching:
 ```
 git clone https://github.com/DmSM-1/cache.git
 
+cd cache
+
 mkdir build
 
 cd build
