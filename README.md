@@ -22,6 +22,8 @@ cd build
 cmake ..
 
 make
+
+cd ..
 ```
 
 to start the LFU cache:
@@ -49,7 +51,7 @@ For testing use test.py
 
 Example:
 ```
-python3 test/test.py build/flu_cache test/tests
+python3 test/test.py build/lfu_cache test/tests
 
 python3 test/test.py build/prf_cache test/tests -p
 ```
