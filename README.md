@@ -19,7 +19,7 @@ mkdir build
 
 cd build
 
-cmake CMakeLists.txt
+cmake ..
 
 make
 ```
