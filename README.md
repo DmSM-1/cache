@@ -1,5 +1,5 @@
 # Cache
-My realisation lfu and perfect caches
+My implementation of lfu and perfect caches
 
 ## Overview
 In this project, I have realised two algorithms of caching:
