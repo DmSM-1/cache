@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include "../include/Perfect_Cache.hpp"
+#include "Perfect_Cache.hpp"
 
 
 Perfect::Cache_Page<int, int> slow_get_page(int key, int next){

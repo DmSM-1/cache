@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cassert>
-#include "../include/LFU_Cache.hpp"
+#include "LFU_Cache.hpp"
 
 
 LFU::LFU_Page<int, int> slow_get_page(int key){
