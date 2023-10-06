@@ -108,10 +108,6 @@ public:
         CreateIndexMap(is, input);
     }
 
-
-    ~P_Cache(){}
-
-
     //The LookUpdate function searches for an element in the cache or adds it if not found
     bool LookUpdate(const key_t& key, Cache_Page<key_t, page_t> slow_get_page(key_t, int)){
         bool contains = Contains(key);

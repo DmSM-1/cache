@@ -74,10 +74,6 @@ private:
 public:
     LFU_Cache(int bs) : buffer_size(bs){}
 
-
-    ~LFU_Cache(){}
-
-
     //The LookUpdate function searches for an element in the cache or adds it if not found
     bool LookUpdate(const key_t& key, LFU::LFU_Page<int, int> slow_get_page(key_t)){
         if(!Contains(key)){
