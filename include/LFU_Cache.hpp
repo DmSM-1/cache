@@ -18,12 +18,17 @@ template<typename key_t, typename page_t>
 class LFU_Cache { 
 private:
     size_t buffer_size = 0;
+    size_t subcache_count = 0;
     int elemscount = 0;
 
     using ListIt = typename std::list<LFU_Page<key_t, page_t>>::iterator;
+    using SubCache = typename std::list<LFU_Page<key_t, page_t>>;
     
     std::list<LFU_Page<key_t, page_t>> cache;
     std::unordered_map<key_t, ListIt> hashmap;
+
+    std::list<SubCache> new_cache;
+
     ListIt in_cache;
     
 
