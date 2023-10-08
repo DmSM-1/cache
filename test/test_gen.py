@@ -3,10 +3,10 @@ import sys
 from random import randint
 
 
-MAX_BUFFER_SIZE = 256
-MAX_INPUTS      = MAX_BUFFER_SIZE * 16
+MAX_BUFFER_SIZE = 32
+MAX_INPUTS      = MAX_BUFFER_SIZE * 32
 MAX_INTEGER     = 256
-TESTS           = 25
+TESTS           = 250
 
 
 def calculate_lfu_cache_hits(buffer_size, input_size, input_buffer)->int:
@@ -36,8 +36,6 @@ def calculate_perfect_cache_hits(buffer_size, input_size, input_buffer)->int:
     for i in range(len(input_buffer)):
         if input_buffer[i] in [j[0] for j in cache]: 
             hits += 1
-        elif len(cache) == buffer_size: 
-            cache[-1] = [input_buffer[i], 0]
         else:
             cache.append([input_buffer[i], 0])
         for j in range(len(cache)):
@@ -46,6 +44,9 @@ def calculate_perfect_cache_hits(buffer_size, input_size, input_buffer)->int:
             else:
                 cache[j][1] = input_buffer[i+1::].index(cache[j][0])
         cache = sorted(cache,key = lambda x: x[1])
+
+        if len(cache) > buffer_size: 
+            cache.pop()
 
     return hits
 

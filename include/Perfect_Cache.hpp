@@ -73,17 +73,20 @@ private:
 
 
     void Add(const key_t& key, Cache_Page<key_t, page_t> slow_get_page(key_t, int)){
-        if (elemscount == buffer_size) {
-            hashmap.erase(cache.back().key);
-            cache.pop_back();
-        }
-        else
+        if (elemscount <= buffer_size)
             elemscount++;
 
         cache.push_back(slow_get_page(key, 0));
         hashmap[key] = std::prev(cache.end()); 
         auto elem = hashmap.find(key);
         in_cache = elem->second;
+        Raise();
+
+        if (elemscount > buffer_size) {
+            hashmap.erase(cache.back().key);
+            cache.pop_back();
+            elemscount--;
+        }
     }
 
 
@@ -113,7 +116,8 @@ public:
         bool contains = Contains(key);
         if(!contains)
             Add(key, slow_get_page);
-        Raise();
+        else 
+            Raise();
 
         return contains;
     }
