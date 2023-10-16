@@ -22,13 +22,14 @@ class P_Cache{
 private:
     size_t buffer_size;
     size_t input_size;
-    int elemscount = 0;
-
+    size_t elemscount = 0;
+    
     using ListIt = typename std::list<Cache_Page<key_t, page_t>>::iterator;
     
     std::list<Cache_Page<key_t, page_t>> cache; 
     std::unordered_map<key_t, ListIt> hashmap; 
     std::unordered_map<key_t, std::queue<int>> indexmap;
+    std::vector<ListIt> indexvect;
     ListIt in_cache; //stores an iterator pointing to the currently found element
 
 
@@ -58,6 +59,25 @@ private:
         return positions.front();
     }
 
+
+    int Bin(int index){
+        int low = 0;
+        int high = elemscount - 1;
+        int mean = 0;
+
+        while (high - low > 1){
+            mean = (high+low)/2;
+            if (indexvect[mean]->next > index)
+                high = mean;
+            else
+                low = mean;
+        }
+        if (indexvect[low]->next >= index)
+            return low;
+        return high;
+        
+    }
+
     
     bool Contains(const key_t& key) {
         if (!elemscount)
@@ -72,38 +92,48 @@ private:
     }
 
 
-    void Add(const key_t& key, Cache_Page<key_t, page_t> slow_get_page(key_t, int)){
-        if (elemscount <= buffer_size)
-            elemscount++;
+    int Add(const key_t& key, Cache_Page<key_t, page_t> page, bool new_elem = false){
+        
+        int next = GetNextIndex(key);
+        if (next == input_size)
+            return 1;
+        page.next = next;
 
-        cache.push_back(slow_get_page(key, 0));
-        hashmap[key] = std::prev(cache.end()); 
-        auto elem = hashmap.find(key);
-        in_cache = elem->second;
-        Raise();
+        if (!elemscount || page.next < cache.front().next){
+            cache.push_front(page);
+            indexvect.insert(indexvect.begin(),cache.begin());
+            hashmap[key] = cache.begin();
+        }else{
+            int pos = Bin(next);
+            if (indexvect[pos]->next > next){
+                cache.insert(indexvect[pos], page);
+                indexvect.insert(indexvect.begin()+pos, std::prev(indexvect[pos]));
+                hashmap[key] = (indexvect[pos]);
+            }else{
+                cache.insert(std::next(indexvect[pos]), page);
+                indexvect.insert(indexvect.begin()+pos+1, std::next(indexvect[pos]));
+                hashmap[key] = std::next(indexvect[pos]);
+            }
+        }
+        elemscount++;
 
-        if (elemscount > buffer_size) {
+        if (elemscount > buffer_size){
             hashmap.erase(cache.back().key);
             cache.pop_back();
+            indexvect.pop_back();
             elemscount--;
         }
+        return 0;
     }
 
 
-    // The Raise function updates the position of an element in the cache in case of a hit or when adding a new element
-    void Raise() {
-        in_cache->next = GetNextIndex(in_cache->key);
-        cache.splice(cache.end(), cache, in_cache);
-        int next = in_cache->next;
-
-        ListIt i = in_cache;
-        
-        for(i--; i != cache.begin() && i->next>next; i--);
-        
-        if (i->next <= next)
-            i++; 
-        
-        cache.splice(i, cache, in_cache);
+    Cache_Page<key_t, page_t> Remove(key_t key){
+        int pos = Bin(in_cache->next);
+        Cache_Page<key_t, page_t> page = *indexvect[pos];
+        cache.erase(indexvect[pos]);
+        indexvect.erase(indexvect.begin()+pos);
+        elemscount--;
+        return page;
     }  
 
 public:
@@ -115,15 +145,15 @@ public:
     bool LookUpdate(const key_t& key, Cache_Page<key_t, page_t> slow_get_page(key_t, int)){
         bool contains = Contains(key);
         if(!contains)
-            Add(key, slow_get_page);
-        else 
-            Raise();
+            Add(key, slow_get_page(key, 0), true);
+        else
+            Add(key, Remove(key));
 
         return contains;
     }
 
 
-    void PrintInfo() {
+    void Dump() {
         std::cout << "______________________________\n";
         std::cout << "Class: LFU_CACHE\n";
         std::cout << "Buffer size:" << buffer_size << '\n';
@@ -132,6 +162,12 @@ public:
         std::cout<<'[';
         for (ListIt i = cache.begin(); i!=cache.end(); i++){
             std::cout<<'('<<i->key<<','<<i->next<<"), ";
+        }
+        std::cout<<"]\n";
+
+        std::cout<<'[';
+        for (int i = 0; i<indexvect.size(); i++){
+            std::cout<<'('<<indexvect[i]->key<<','<<indexvect[i]->next<<"), ";
         }
         std::cout<<"]\n";
         std::cout << "______________________________\n";
