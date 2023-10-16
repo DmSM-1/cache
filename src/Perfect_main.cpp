@@ -25,9 +25,8 @@ int main(){
     Perfect::P_Cache<int, int> cache(buffer_size, input_size, input_buffer);
 
     int hits = 0;
-    for(int i = 0; i < input_size; i++){
+    for(int i = 0; i < input_size; i++)
         hits += cache.LookUpdate(input_buffer[i], slow_get_page);
-    }
 
     std::cout << "Hits:" << hits << "\n";
 }
